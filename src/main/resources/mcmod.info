@@ -1,0 +1,16 @@
+[
+{
+  "modid": "irespectyouroptions",
+  "name": "I Respect Your Options",
+  "description": "Lets you copy a set of default options into the config folder on the first launch of the game.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://modrinth.com/mod/irespectyouroptions/versions",
+  "updateUrl": "",
+  "authorList": ["Kd_Gaming1"],
+  "credits": "Kd_Gaming1",
+  "logoFile": "/iRespectYourOptions/logo.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]
