@@ -1,3 +1,14 @@
+I Respect Your Options
+This mod has one simple function, to allow a modpack creator to deliver a set of default options that will be copied over to the config folder upon the game's first launch.
+How will it work in practice?
+
+To make it work, you need to create a folder named "iRespectYourOptions" located in "\config\iRespectYourOptions" directory. In this folder, you should put all the configuration files and folders. When you launch the game, the configuration file from the "\config\iRespectYourOptions" directory will be copied to the "/config" directory. A file named "has_run_before.txt" will also be created and placed in the "/config" directory. As long as this file exists, the configuration file won't be copied again. If you want to revert to the default options, delete the "has_run_before.txt" file, and the game will copy the configuration file from the "\config\iRespectYourOptions" directory again and overwrite the config files in the "\config" directory.
+
+If you want to export the options.txt file from the vanilla game, you can place it in the "\config\iRespectYourOptions\minecraft_options" directory. The game will copy this file and overwrite the existing option.txt file. Then in the "\config" directory, a "has_run_before.txt" file will also be created. As long as this file exists, the game won't copy the configuration file again.
+
+Inspired by the Your Options Shall Be Respected (YOSBR) mod. If you need the mod for a newer version go and find that one.
+
+
 -------------------------------------------
 Source installation information for modders
 -------------------------------------------
