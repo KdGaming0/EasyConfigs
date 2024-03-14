@@ -1,22 +1,28 @@
 package tech.kdgaming1.irespectyouroptions;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.stream.Stream;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
+
 @Mod(modid = iRespectYourOptions.MOD_ID, version = iRespectYourOptions.VERSION)
 public class iRespectYourOptions {
     public static final String MOD_ID = "irespectyouroptions";
-    public static final String VERSION = "0.1.0-1.8.9";
+    public static final String VERSION = "0.1.1-1.8.9";
 
     @EventHandler
     public void init(FMLPreInitializationEvent event)
     {
         // Alerts the user that the mod is applying the default config
-        System.out.println("I Respect Your Options is applying the default config");
+        System.out.println("I Respect Your Options is applying the default config...");
 
         // Create a file to say that the mod has run before
         File iRespectYourOptionsHasRunBefore = new File(event.getModConfigurationDirectory(), "I Respect Your Options Has Run Before.txt");
@@ -30,30 +36,32 @@ public class iRespectYourOptions {
         }
 
         // Get the directory of the config folder and the default config folder
-        File defaultConfigFolder = new File(event.getModConfigurationDirectory().getParent(), "config/iRespectYourOptions");
-        File userConfigFolder = new File(event.getModConfigurationDirectory().getParent(), "config");
+        Path defaultConfigFolder = Paths.get(event.getModConfigurationDirectory().getParent(), "config/iRespectYourOptions");
+        Path userConfigFolder = Paths.get(event.getModConfigurationDirectory().getParent(), "config");
 
         // Print the default config folder and the user config folder paths to the console
         System.out.println("Default Config Folder: " + defaultConfigFolder);
         System.out.println("User Config Folder: " + userConfigFolder);
 
         // create the default config folder if it doesn't exist and the user config folder if it doesn't exist
-        if (!userConfigFolder.exists()) {
-            userConfigFolder.mkdirs();
-        }
-        if (!defaultConfigFolder.exists()) {
-            defaultConfigFolder.mkdirs();
+        // ...
+
+        try {
+            Files.createDirectories(userConfigFolder);
+            Files.createDirectories(defaultConfigFolder);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        // Apply the default configs if any exist
-        if (defaultConfigFolder.listFiles().length > 0) {
+    // Apply the default configs if any exist
+        try {
+        boolean isDefaultConfigFolderEmpty = isEmpty(defaultConfigFolder);
+        
+        if (!isDefaultConfigFolderEmpty) {
             // Copy the files in the default config folder to the user config folder
             try {
-                for (File file : defaultConfigFolder.listFiles()) {
-                    File userConfigFile = new File(userConfigFolder, file.getName());
-                    copyFunction(file, userConfigFile, userConfigFolder);
-                    System.out.println("Copied " + file + " to " + userConfigFile);
-                }
+                copyDirectory(defaultConfigFolder, userConfigFolder);
+                System.out.println("Copied " + defaultConfigFolder + " to " + userConfigFolder);
             } catch (IOException e) {
                 e.printStackTrace();
                 System.err.println("Failed to apply the default configs.");
@@ -61,55 +69,65 @@ public class iRespectYourOptions {
             // Create the file to say that the mod has run before
             try {
                 iRespectYourOptionsHasRunBefore.createNewFile();
-                System.out.println("Created the file " + iRespectYourOptionsHasRunBefore + " to say that the mod has run before. So it will not overwrite the default config again. Delete this file if you want to apply the default config again.");
+                System.out.println("Created the file " + iRespectYourOptionsHasRunBefore + " to say that the mod has run before. So it will not apply the default config again.");
             } catch (IOException e) {
                 e.printStackTrace();
                 System.err.println("Failed to create the file " + iRespectYourOptionsHasRunBefore + " to say that the mod has run before.");
             }
         } else {
             // If the default config folder is empty, print a message to the console and return
-            System.out.println("The iRespectYourOptions directory is empty or does not exist. Cat't apply any configs.");
+                System.out.println("The iRespectYourOptions directory is empty or does not exist. Can't apply any configs.");
             // Create the file to say that the mod has run before
-            try {
-                // Create the file to say that the mod has run before
-                iRespectYourOptionsHasRunBefore.createNewFile();
-                System.out.println("Created the file " + iRespectYourOptionsHasRunBefore + " to say that the mod has run before. So it will not apply the default config again.");
-            } catch (IOException e) {
+                try {
+                    iRespectYourOptionsHasRunBefore.createNewFile();
+                    System.out.println("Created the file " + iRespectYourOptionsHasRunBefore + " to say that the mod has run before. So it will not apply the default config again.");
+                } catch (IOException e) {
                 e.printStackTrace();
                 System.err.println("Failed to create the file " + iRespectYourOptionsHasRunBefore + " to say that the mod has run before.");
+                }
+                    return;
             }
-            return;
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to copy the default configs.");
         }
     }
 
-    // Create the copy function
-    public void copyFunction(File source, File destination, File userConfigFolder) throws IOException {
-        // If the source is a directory, create the destination directory if it doesn't exist
-        if (source.isDirectory()) {
-            if (!destination.exists()) {
-                destination.mkdirs();
+    // Check if a directory is empty
+    public boolean isEmpty(Path path) throws IOException {
+        if (Files.isDirectory(path)) {
+            try (Stream<Path> entries = Files.list(path)) {
+                return !entries.findFirst().isPresent();
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Failed to check if the directory " + path + " is empty.");
             }
-            // Copy the files in the source directory to the destination directory
-            String files[] = source.list();
-            for (String file : files) {
-                File srcFile = new File(source, file);
-                File destFile = new File(destination, file);
-                // Special case for the minecraft options file and the optifine options file
-                if (source.getName().equals("minecraft_options") && (file.equals("options.txt") || file.equals("optionsof.txt"))) {
-                    destFile = new File(userConfigFolder.getParent(), file);
+        }   
+        return false;
+    }
+
+    // Copy the files in the default config folder to the user config folder
+    public static void copyDirectory(Path sourceDirectory, Path destinationDirectory) throws IOException {
+        Files.walk(sourceDirectory)
+            .forEach(source -> {
+                try {
+                    // Special case for the minecraft options file and the optifine options file
+                    if (source.getFileName().toString().equals("minecraft_options")) {
+                        Files.list(source).forEach(fileInsideMinecraftOptions -> {
+                            Path destination = destinationDirectory.getParent().resolve(fileInsideMinecraftOptions.getFileName());
+                            try {
+                                Files.copy(fileInsideMinecraftOptions, destination, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    } else if (!source.equals(sourceDirectory)) {
+                        Path destination = destinationDirectory.resolve(sourceDirectory.relativize(source));
+                        Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                // Recursively copy the files in the source directory to the destination directory
-                copyFunction(srcFile, destFile, userConfigFolder);
-            }
-            // If the source is a file, copy the file to the destination
-        } else {
-                java.nio.file.Files.copy(
-                        source.toPath(),
-                        destination.toPath(),
-                        java.nio.file.StandardCopyOption.REPLACE_EXISTING,
-                        java.nio.file.StandardCopyOption.COPY_ATTRIBUTES,
-                        java.nio.file.LinkOption.NOFOLLOW_LINKS
-                );
-        }
+            });
     }
 }
