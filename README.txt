@@ -1,6 +1,6 @@
-##I Respect Your Options
+## I Respect Your Options
 
-###This mod has one simple function, to allow a modpack creator to deliver a set of default options that will be copied over to the config folder upon the game's first launch.
+### This mod has one simple function, to allow a modpack creator to deliver a set of default options that will be copied over to the config folder upon the game's first launch.
 
 How will it work in practice?
 
@@ -12,7 +12,7 @@ Create /config/iRespectYourOptions/options.txt Put default content in it Launch 
 - Example 2 (config/testmod/testmodconfig.json5)
 Create /config/iRespectYourOptions/config/testmod/testmodconfig.json5 Put default content in it Launch the game! YOSBR will copy /config/iRespectYourOptions/config/testmod/testmodconfig.json5 into /config/testmod/testmodconfig.json5. So all the files there will be copied to the config directory.
 
-###Important
+### Important
 - When the game has launched for the first time an iRespectYourOptions.cfg file will be created in the config folder and as long that file exists it will not try to copy the files. If you want to overwrite the configs back to the default one just delete it and restart the game.
 - Modpack developers should not include the iRespectYourOptions.cfg file in their distribution to users since it defeats the purpose of the mod.
 
