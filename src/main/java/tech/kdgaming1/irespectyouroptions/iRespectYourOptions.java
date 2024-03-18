@@ -36,13 +36,9 @@ public class iRespectYourOptions {
                 throw new IllegalStateException("Could not create directory: " + iRespectYourOptions.getAbsolutePath());
             }
             new File(iRespectYourOptions, "options.txt").createNewFile();
+            new File(iRespectYourOptions, "optionsof.txt").createNewFile();
             File config = new File(iRespectYourOptions, "config");
             if (!config.exists() && !config.mkdirs()) {
-                throw new IllegalStateException("Could not create directory: " + config.getAbsolutePath());
-            }
-            new File(iRespectYourOptions, "optionsof.txt").createNewFile();
-            File configof = new File(iRespectYourOptions, "config");
-            if (!configof.exists() && !configof.mkdirs()) {
                 throw new IllegalStateException("Could not create directory: " + config.getAbsolutePath());
             }
             
