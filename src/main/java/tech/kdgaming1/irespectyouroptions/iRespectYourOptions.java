@@ -1,7 +1,6 @@
 package tech.kdgaming1.irespectyouroptions;
 
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.Loader;
@@ -14,25 +13,20 @@ import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 
 @Mod(modid = iRespectYourOptions.MOD_ID, version = iRespectYourOptions.VERSION, dependencies = "before:*")
 public class iRespectYourOptions {
     public static final String MOD_ID = "irespectyouroptions";
-    public static final String VERSION = "0.2.1-1.8.9";
+    public static final String VERSION = "0.2.2-1.8.9";
     private static final Logger LOGGER = LogManager.getLogger(iRespectYourOptions.class);
 
     public iRespectYourOptions() {
-        // Code to run before preInit
-        LOGGER.info("Running code in constructor...");
-    }
 
-    @Mod.EventHandler
-    public void preinit(FMLPreInitializationEvent event)
-    {
-        File runDir = new File(event.getModConfigurationDirectory().getParent());
-        File configDir = new File(event.getModConfigurationDirectory().getParent(), "config");
+        String runDir = Paths.get("").toAbsolutePath().toString();
+        String configDir = Paths.get(runDir, "config").toString();
 
         LOGGER.info("Applying default options... (iRespectYourOptions)");
         try {
