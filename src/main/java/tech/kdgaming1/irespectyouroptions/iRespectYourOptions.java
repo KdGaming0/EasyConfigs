@@ -1,5 +1,7 @@
 package tech.kdgaming1.irespectyouroptions;
 
+import tech.kdgaming1.irespectyouroptions.applyDefaultOptions;
+
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -7,11 +9,8 @@ import net.minecraftforge.fml.common.Loader;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.nio.file.StandardCopyOption;
 import java.io.File;
-import java.nio.file.FileSystemException;
 import java.nio.file.Files;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -20,7 +19,7 @@ import java.nio.file.Paths;
 @Mod(modid = iRespectYourOptions.MOD_ID, version = iRespectYourOptions.VERSION, dependencies = "before:*")
 public class iRespectYourOptions {
     public static final String MOD_ID = "irespectyouroptions";
-    public static final String VERSION = "0.2.2-1.8.9";
+    public static final String VERSION = "0.2.3-1.8.9";
     private static final Logger LOGGER = LogManager.getLogger(iRespectYourOptions.class);
 
     public iRespectYourOptions() {
@@ -65,12 +64,12 @@ public class iRespectYourOptions {
                             Path configRelative = config.toPath().toAbsolutePath().normalize().relativize(file.toPath().toAbsolutePath().normalize());
                             if (configRelative.startsWith("iRespectYourOptions"))
                                 throw new IllegalStateException("Illegal default config file: " + file);
-                            applyDefaultOptions(new File(configDir, configRelative.normalize().toString()), file);
+                            applyDefaultOptions.applyDefaultOptions(new File(configDir, configRelative.normalize().toString()), file);
                         } catch (IllegalArgumentException e) {
                             System.out.println(iRespectYourOptions.toPath().toAbsolutePath().normalize());
                             System.out.println(file.toPath().toAbsolutePath().normalize());
                             System.out.println(iRespectYourOptions.toPath().toAbsolutePath().normalize().relativize(file.toPath().toAbsolutePath().normalize()));
-                            applyDefaultOptions(new File(runDir, iRespectYourOptions.toPath().toAbsolutePath().normalize().relativize(file.toPath().toAbsolutePath().normalize()).normalize().toString()), file);
+                            applyDefaultOptions.applyDefaultOptions(new File(runDir, iRespectYourOptions.toPath().toAbsolutePath().normalize().relativize(file.toPath().toAbsolutePath().normalize()).normalize().toString()), file);
                         }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -83,30 +82,6 @@ public class iRespectYourOptions {
             }
         } catch (Exception e) {
             LOGGER.error("Failed to apply default options.", e);
-        }
-    }
-    
-    // This method is called when the mod is loaded and is used to apply the default options
-    private void applyDefaultOptions(File file, File defaultFile) throws IOException{
-        try {
-            if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
-                throw new IllegalStateException("Could not create directory: " + file.getParentFile().getAbsolutePath());
-            }
-            if (!defaultFile.getParentFile().exists() && !defaultFile.getParentFile().mkdirs()) {
-                throw new IllegalStateException("Could not create directory: " + defaultFile.getParentFile().getAbsolutePath());
-            }
-            if (!defaultFile.exists()) {
-                LOGGER.info("Default file does not exist: " + defaultFile.getAbsolutePath());
-                defaultFile.createNewFile();
-                return;
-            }
-            LOGGER.info("Applying default options for " + File.separator + file.toPath().toAbsolutePath().normalize().toString() + " from " + File.separator +
-                        defaultFile.toPath().toAbsolutePath().normalize().toString());
-            Files.copy(defaultFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
-        } catch (FileSystemException e) {
-            LOGGER.error("File is being used by another process: " + defaultFile.getAbsolutePath(), e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }
