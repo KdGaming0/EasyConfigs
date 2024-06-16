@@ -31,14 +31,15 @@ public class iRespectYourOptions {
                 throw new IllegalStateException("Could not create directory: " + iRespectYourOptionsFolder.getAbsolutePath());
             }
 
-            createExampleFile(iRespectYourOptionsFolder, "exampleConfig_openForInstructions.txt");
-            createExampleFile(iRespectYourOptionsFolder, "exampleConfig2_openForInstructions.txt");
-
-            File config = new File(iRespectYourOptionsFolder, "config");
-            if (!config.exists() && !config.mkdirs()) {
-                LOGGER.info("Remember to put content in to the options.txt and optionsof.txt files in the iRespectYourOptions folder in the config folder.");
-                throw new IllegalStateException("Could not create directory: " + config.getAbsolutePath());
+            File configFolder = new File(iRespectYourOptionsFolder, "config");
+            if (!configFolder.exists() && !configFolder.mkdirs()) {
+                throw new IllegalStateException("Could not create directory: " + configFolder.getAbsolutePath());
             }
+
+            createExampleFile(iRespectYourOptionsFolder, "exampleConfig_openForInstructions.txt", "This is an example config file that demonstrates how the mod works. " +
+                    "When the mod is loaded, this file will be copied to the root run directory if it's inside this config folder.");
+            createExampleFile(configFolder, "exampleConfig2_openForInstructions.txt", "This is another example config file. " +
+                    "Files inside this subdirectory will be copied to the corresponding path in the run directory when the mod is loaded.");
 
             File configFile = new File(Loader.instance().getConfigDir(), "iRespectYourOptions.cfg");
             Configuration configuration = new Configuration(configFile);
@@ -58,10 +59,9 @@ public class iRespectYourOptions {
         }
     }
 
-    private void createExampleFile(File folder, String fileName) throws IOException {
+    private void createExampleFile(File folder, String fileName, String content) throws IOException {
         File file = new File(folder, fileName);
         if (file.createNewFile()) {
-            String content = "This is the text content to write into file";
             Files.write(Paths.get(file.getPath()), content.getBytes(), StandardOpenOption.APPEND);
         }
     }
