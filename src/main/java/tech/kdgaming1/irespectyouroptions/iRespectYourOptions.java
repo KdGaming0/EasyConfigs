@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.*;
+import java.util.Objects;
 
 @Mod(modid = iRespectYourOptions.MOD_ID, version = iRespectYourOptions.VERSION, dependencies = "before:*")
 public class iRespectYourOptions {
@@ -37,8 +38,8 @@ public class iRespectYourOptions {
 
             try {
                 // Get the paths of the source files in the resources directory
-                Path sourceFile1 = Paths.get(getClass().getClassLoader().getResource("irespectyouroptions/exampleConfig_openForInstructions.txt").toURI());
-                Path sourceFile2 = Paths.get(getClass().getClassLoader().getResource("irespectyouroptions/exampleConfig2_openForInstructions.txt").toURI());
+                Path sourceFile1 = Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("irespectyouroptions/exampleConfig_openForInstructions.txt")).toURI());
+                Path sourceFile2 = Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("irespectyouroptions/exampleConfig2_openForInstructions.txt")).toURI());
 
                 // Get the paths of the target directories
                 Path targetFile1 = iRespectYourOptionsFolder.toPath().resolve("exampleConfig_openForInstructions.txt");
