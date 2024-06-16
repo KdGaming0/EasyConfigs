@@ -9,9 +9,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.net.URISyntaxException;
+import java.nio.file.*;
 
 @Mod(modid = iRespectYourOptions.MOD_ID, version = iRespectYourOptions.VERSION, dependencies = "before:*")
 public class iRespectYourOptions {
@@ -36,10 +35,21 @@ public class iRespectYourOptions {
                 throw new IllegalStateException("Could not create directory: " + configFolder.getAbsolutePath());
             }
 
-            createExampleFile(iRespectYourOptionsFolder, "exampleConfig_openForInstructions.txt", "This is an example config file that demonstrates how the mod works. " +
-                    "When the mod is loaded, this file will be copied to the root run directory if it's inside this config folder.");
-            createExampleFile(configFolder, "exampleConfig2_openForInstructions.txt", "This is another example config file. " +
-                    "Files inside this subdirectory will be copied to the corresponding path in the run directory when the mod is loaded.");
+            try {
+                // Get the paths of the source files in the resources directory
+                Path sourceFile1 = Paths.get(getClass().getClassLoader().getResource("irespectyouroptions/exampleConfig_openForInstructions.txt").toURI());
+                Path sourceFile2 = Paths.get(getClass().getClassLoader().getResource("irespectyouroptions/exampleConfig2_openForInstructions.txt").toURI());
+
+                // Get the paths of the target directories
+                Path targetFile1 = iRespectYourOptionsFolder.toPath().resolve("exampleConfig_openForInstructions.txt");
+                Path targetFile2 = configFolder.toPath().resolve("exampleConfig2_openForInstructions.txt");
+
+                // Copy the files
+                Files.copy(sourceFile1, targetFile1, StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(sourceFile2, targetFile2, StandardCopyOption.REPLACE_EXISTING);
+            } catch (URISyntaxException | IOException e) {
+                LOGGER.error("Failed to copy files.", e);
+            }
 
             File configFile = new File(Loader.instance().getConfigDir(), "iRespectYourOptions.cfg");
             Configuration configuration = new Configuration(configFile);
@@ -56,13 +66,6 @@ public class iRespectYourOptions {
             }
         } catch (Exception e) {
             LOGGER.error("Failed to apply default options.", e);
-        }
-    }
-
-    private void createExampleFile(File folder, String fileName, String content) throws IOException {
-        File file = new File(folder, fileName);
-        if (file.createNewFile()) {
-            Files.write(Paths.get(file.getPath()), content.getBytes(), StandardOpenOption.APPEND);
         }
     }
 }
