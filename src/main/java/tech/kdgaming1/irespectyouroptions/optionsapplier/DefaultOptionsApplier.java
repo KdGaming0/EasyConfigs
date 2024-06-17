@@ -1,7 +1,8 @@
-package tech.kdgaming1.irespectyouroptions;
+package tech.kdgaming1.irespectyouroptions.optionsapplier;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tech.kdgaming1.irespectyouroptions.IRespectYourOptions;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,11 +12,11 @@ import java.nio.file.StandardCopyOption;
 
 public class DefaultOptionsApplier {
 
-    private static final Logger LOGGER = LogManager.getLogger(iRespectYourOptions.class);
+    private static final Logger LOGGER = LogManager.getLogger(IRespectYourOptions.class);
 
     public static void apply() {
-        String runDir = iRespectYourOptions.runDir;
-        String configDir = iRespectYourOptions.configDir;
+        String runDir = IRespectYourOptions.runDir;
+        String configDir = IRespectYourOptions.configDir;
         File iRespectYourOptionsFolder = new File(configDir, "iRespectYourOptions");
 
         try {
