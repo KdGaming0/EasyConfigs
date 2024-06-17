@@ -1,5 +1,6 @@
 package tech.kdgaming1.irespectyouroptions;
 
+import cc.polyfrost.oneconfig.config.annotations.Page;
 import tech.kdgaming1.irespectyouroptions.command.IRespectYourOptionsCommand;
 import tech.kdgaming1.irespectyouroptions.config.IRespectYourOptionsConfig;
 import tech.kdgaming1.irespectyouroptions.optionsapplier.DefaultOptionsApplier;
@@ -15,6 +16,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tech.kdgaming1.irespectyouroptions.page.IRespectYourOptionsPage;
 
 
 import java.io.File;

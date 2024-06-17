@@ -1,13 +1,11 @@
 package tech.kdgaming1.irespectyouroptions.config;
 
 import cc.polyfrost.oneconfig.config.annotations.*;
-import cc.polyfrost.oneconfig.config.data.InfoType;
+import cc.polyfrost.oneconfig.config.data.*;
 import tech.kdgaming1.irespectyouroptions.IRespectYourOptions;
 import tech.kdgaming1.irespectyouroptions.hud.IRespectYourOptionsHud;
 import cc.polyfrost.oneconfig.config.Config;
-import cc.polyfrost.oneconfig.config.data.Mod;
-import cc.polyfrost.oneconfig.config.data.ModType;
-import cc.polyfrost.oneconfig.config.data.OptionSize;
+import tech.kdgaming1.irespectyouroptions.page.IRespectYourOptionsPage;
 
 public class IRespectYourOptionsConfig extends Config {
     @HUD(
@@ -38,9 +36,16 @@ public class IRespectYourOptionsConfig extends Config {
     )
     public static boolean wantToRun = true; // The default value for the boolean Switch.
 
+    @Page(
+            name = "Mod Pack Developer Settings",
+            location = PageLocation.BOTTOM,
+            // optional description that is also displayed on the page button
+            description = "Press me to open Developer Settings for Mod Pack creators!"
+    )
+    public static IRespectYourOptionsPage pageToOpen = new IRespectYourOptionsPage();
 
     public IRespectYourOptionsConfig() {
-        super(new Mod(IRespectYourOptions.NAME, ModType.UTIL_QOL), IRespectYourOptions.MODID + ".json");
+        super(new Mod(IRespectYourOptions.NAME, ModType.UTIL_QOL, "/IRespectYourOptions/src/main/resources/irespectyouroptions/logo.png"),IRespectYourOptions.MODID + ".json");
         initialize();
     }
 }
