@@ -1,14 +1,14 @@
 [
   {
-    "modid": "${id}",
-    "name": "${name}",
-    "description": "",
+    "modid": "${modid}",
+    "name": "I Respect Your Options",
+    "description": "A mod that is used as an example.",
     "version": "${version}",
-    "mcversion": "${mcVersionStr}",
-    "url": "",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/KdGaming0/iRespectYourOptions",
     "updateUrl": "",
     "authorList": [
-      "Your Name"
+      "Kd_Gaming1"
     ],
     "credits": "",
     "logoFile": "",

@@ -1,8 +1,7 @@
-package tech.kdgaming1.irespectyouroptions.optionsapplier;
+package tech.kdgaming1.irespectyouroptions;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tech.kdgaming1.irespectyouroptions.IRespectYourOptions;
 
 import java.io.File;
 import java.io.IOException;

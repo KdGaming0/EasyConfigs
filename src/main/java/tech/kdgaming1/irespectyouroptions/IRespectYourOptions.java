@@ -1,45 +1,23 @@
 package tech.kdgaming1.irespectyouroptions;
 
-import cc.polyfrost.oneconfig.config.annotations.Page;
-import tech.kdgaming1.irespectyouroptions.command.IRespectYourOptionsCommand;
-import tech.kdgaming1.irespectyouroptions.config.IRespectYourOptionsConfig;
-import tech.kdgaming1.irespectyouroptions.optionsapplier.DefaultOptionsApplier;
-
-import cc.polyfrost.oneconfig.events.event.InitializationEvent;
-import cc.polyfrost.oneconfig.utils.commands.CommandManager;
-
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.Mod;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tech.kdgaming1.irespectyouroptions.page.IRespectYourOptionsPage;
-
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.nio.file.*;
+import java.util.Objects;
 
-/**
- * The entrypoint of the Example Mod that initializes it.
- *
- * @see Mod
- * @see InitializationEvent
- */
-@Mod(modid = IRespectYourOptions.MODID, name = IRespectYourOptions.NAME, version = IRespectYourOptions.VERSION)
+@Mod(modid = IRespectYourOptions.MOD_ID, version = IRespectYourOptions.VERSION)
 public class IRespectYourOptions {
-
-    // Sets the variables from `gradle.properties`. See the `blossom` config in `build.gradle.kts`.
-    public static final String MODID = "@ID@";
-    public static final String NAME = "@NAME@";
-    public static final String VERSION = "@VER@";
-    @Mod.Instance(MODID)
-    public static IRespectYourOptions INSTANCE; // Adds the instance of the mod, so we can access other variables.
-    public static IRespectYourOptionsConfig config;
+    public static final String MOD_ID = "irespectyouroptions";
+    public static final String VERSION = "0.2.3-1.8.9";
 
     private static final Logger LOGGER = LogManager.getLogger(IRespectYourOptions.class);
 
@@ -49,7 +27,6 @@ public class IRespectYourOptions {
 
     public IRespectYourOptions() {
         LOGGER.info("Applying default options... (iRespectYourOptions)");
-
         try {
             File iRespectYourOptionsFolder = new File(configDir, "iRespectYourOptions");
             if (!iRespectYourOptionsFolder.exists() && !iRespectYourOptionsFolder.mkdirs()) {
@@ -62,10 +39,18 @@ public class IRespectYourOptions {
             }
 
             try {
-                // Using streams to handle resource files
-                copyResourceToFile("irespectyouroptions/exampleConfig_openForInstructions.txt", new File(iRespectYourOptionsFolder, "exampleConfig_openForInstructions.txt"));
-                copyResourceToFile("irespectyouroptions/exampleConfig2_openForInstructions.txt", new File(configFolder, "exampleConfig2_openForInstructions.txt"));
-            } catch (IOException e) {
+                // Get the paths of the source files in the resources directory
+                Path sourceFile1 = Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("irespectyouroptions/exampleConfig_openForInstructions.txt")).toURI());
+                Path sourceFile2 = Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("irespectyouroptions/exampleConfig2_openForInstructions.txt")).toURI());
+
+                // Get the paths of the target directories
+                Path targetFile1 = iRespectYourOptionsFolder.toPath().resolve("exampleConfig_openForInstructions.txt");
+                Path targetFile2 = configFolder.toPath().resolve("exampleConfig2_openForInstructions.txt");
+
+                // Copy the files
+                Files.copy(sourceFile1, targetFile1, StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(sourceFile2, targetFile2, StandardCopyOption.REPLACE_EXISTING);
+            } catch (URISyntaxException | IOException e) {
                 LOGGER.error("Failed to copy files.", e);
             }
 
@@ -85,22 +70,5 @@ public class IRespectYourOptions {
         } catch (Exception e) {
             LOGGER.error("Failed to apply default options.", e);
         }
-    }
-
-    private void copyResourceToFile(String resourcePath, File targetFile) throws IOException {
-        try (InputStream resourceStream = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
-            if (resourceStream == null) {
-                throw new IOException("Resource not found: " + resourcePath);
-            }
-            Files.copy(resourceStream, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        }
-    }
-
-
-    // Register the config and commands.
-    @Mod.EventHandler
-    public void onInit(FMLInitializationEvent event) {
-        config = new IRespectYourOptionsConfig();
-        CommandManager.INSTANCE.registerCommand(new IRespectYourOptionsCommand());
     }
 }
