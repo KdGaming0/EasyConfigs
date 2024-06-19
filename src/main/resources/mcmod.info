@@ -5,13 +5,13 @@
     "description": "A mod that is used as an example.",
     "version": "${version}",
     "mcversion": "${mcversion}",
-    "url": "https://github.com/KdGaming0/iRespectYourOptions",
-    "updateUrl": "",
+    "url": "https://modrinth.com/mod/irespectyouroptions",
+    "updateUrl": "https://modrinth.com/mod/irespectyouroptions/versions",
     "authorList": [
       "Kd_Gaming1"
     ],
     "credits": "",
-    "logoFile": "",
+    "logoFile": "irespectyouroptions/assets/logo.png",
     "screenshots": [],
     "dependencies": []
   }
