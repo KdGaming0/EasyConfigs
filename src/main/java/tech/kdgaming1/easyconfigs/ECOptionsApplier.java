@@ -1,38 +1,37 @@
-package tech.kdgaming1.irespectyouroptions;
+package tech.kdgaming1.easyconfigs;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tech.kdgaming1.irespectyouroptions.command.IRYOCommands;
+import tech.kdgaming1.easyconfigs.command.ECCommands;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.*;
 
-public class IRYODefaultOptionsApplier {
+public class ECOptionsApplier {
 
-    private static final Logger LOGGER = LogManager.getLogger(IRespectYourOptions.class);
+    private static final Logger LOGGER = LogManager.getLogger(EasyConfigs.class);
 
     public static void apply() {
-        String runDir = IRespectYourOptions.runDir;
-        String configDir = IRespectYourOptions.configDir;
-        String IRYODir = IRespectYourOptions.IRYODir;
-        String IRYOSave = Paths.get(IRYODir, "IRYOSave" + IRYOCommands.slot).toString();
-        File iRespectYourOptionsFolder = new File(IRYOSave);
+        String runDir = EasyConfigs.runDir;
+        String ECDir = EasyConfigs.ECDir;
+        String ECSave = Paths.get(ECDir, "EasyConfigsSave" + ECCommands.slot).toString();
+        File EasyConfigsFolder = new File(ECSave);
 
         try {
-            Files.walk(iRespectYourOptionsFolder.toPath()).forEach(path -> {
+            Files.walk(EasyConfigsFolder.toPath()).forEach(path -> {
                 File defaultFile = path.normalize().toAbsolutePath().normalize().toFile();
                 if (!defaultFile.isFile()) return;
                 try {
-                    String relativePath = iRespectYourOptionsFolder.toPath().relativize(path).toString();
+                    String relativePath = EasyConfigsFolder.toPath().relativize(path).toString();
                     File targetFile = new File(runDir, relativePath);
                     applyDefaultOptions(targetFile, defaultFile);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             });
-            LOGGER.info("Default options have been successfully applied. If you want to override your options back to the default, delete the iRespectYourOptions.cfg in your config folder or change the value inside it from true to false and save and start the game.");
+            LOGGER.info("Options have been successfully applied. If you want to override your options back to the default, delete the iRespectYourOptions.cfg in your config folder or change the value inside it from true to false and save and start the game.");
         } catch (Exception e) {
             LOGGER.error("Failed to walk the directory three.", e);
         }
@@ -63,8 +62,8 @@ public class IRYODefaultOptionsApplier {
     }
 
     public static void saveConfigs(int slot) throws IOException {
-        Path configDir = Paths.get(IRespectYourOptions.configDir);
-        Path saveDir = Paths.get(IRespectYourOptions.IRYODir, "save" + slot);
+        Path configDir = Paths.get(EasyConfigs.configDir);
+        Path saveDir = Paths.get(EasyConfigs.ECDir, "save" + slot);
 
         if (Files.exists(saveDir)) {
             throw new FileAlreadyExistsException("Save slot " + slot + " already exists.");
@@ -86,8 +85,8 @@ public class IRYODefaultOptionsApplier {
     }
 
     public static void loadConfigs(int slot) throws IOException {
-        Path configDir = Paths.get(IRespectYourOptions.configDir);
-        Path loadDir = Paths.get(IRespectYourOptions.IRYODir, "save" + slot);
+        Path configDir = Paths.get(EasyConfigs.configDir);
+        Path loadDir = Paths.get(EasyConfigs.ECDir, "save" + slot);
 
         if (!Files.exists(loadDir)) {
             throw new FileNotFoundException("Save slot " + slot + " does not exist.");

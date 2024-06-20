@@ -1,4 +1,4 @@
-package tech.kdgaming1.irespectyouroptions.config;
+package tech.kdgaming1.easyconfigs.config;
 
 import jline.internal.Nullable;
 
@@ -6,11 +6,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.client.IModGuiFactory;
 
-import tech.kdgaming1.irespectyouroptions.gui.IRYOConfigGui;
+import tech.kdgaming1.easyconfigs.gui.ECConfigGui;
 
 import java.util.Set;
 
-public class IRYOGuiFactory implements IModGuiFactory {
+public class ECGuiFactory implements IModGuiFactory {
 
     @Override
     public void initialize(Minecraft minecraftInstance) {
@@ -21,12 +21,12 @@ public class IRYOGuiFactory implements IModGuiFactory {
     }
 
     public GuiScreen createConfigGui(GuiScreen parentScreen) {
-        return new IRYOConfigGui(parentScreen);
+        return new ECConfigGui(parentScreen);
     }
 
     @Override
     public Class<? extends GuiScreen> mainConfigGuiClass() {
-        return IRYOConfigGui.class;
+        return ECConfigGui.class;
     }
 
     @Nullable

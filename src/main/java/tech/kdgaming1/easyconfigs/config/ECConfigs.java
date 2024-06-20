@@ -1,11 +1,11 @@
-package tech.kdgaming1.irespectyouroptions.config;
+package tech.kdgaming1.easyconfigs.config;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
 import java.io.File;
 
-public class IRYOConfigs {
+public class ECConfigs {
 
     public static boolean wantToCopy;
     private static Configuration configuration;

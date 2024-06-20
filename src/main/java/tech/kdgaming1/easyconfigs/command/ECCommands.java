@@ -1,4 +1,4 @@
-package tech.kdgaming1.irespectyouroptions.command;
+package tech.kdgaming1.easyconfigs.command;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -11,8 +11,8 @@ import net.minecraft.util.ChatStyle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import tech.kdgaming1.irespectyouroptions.IRespectYourOptions;
-import tech.kdgaming1.irespectyouroptions.IRYODefaultOptionsApplier;
+import tech.kdgaming1.easyconfigs.EasyConfigs;
+import tech.kdgaming1.easyconfigs.ECOptionsApplier;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,11 +21,11 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
-public class IRYOCommands extends CommandBase {
+public class ECCommands extends CommandBase {
 
     public static int slot = 0;
 
-    private static final Logger LOGGER = LogManager.getLogger(IRYOCommands.class);
+    private static final Logger LOGGER = LogManager.getLogger(ECCommands.class);
 
     @Override
     public String getCommandName() {
@@ -79,7 +79,7 @@ public class IRYOCommands extends CommandBase {
                 return;
             }
 
-            Path saveDir = Paths.get(IRespectYourOptions.IRYODir, "IYROSave" + slot);
+            Path saveDir = Paths.get(EasyConfigs.ECDir, "IYROSave" + slot);
             if (Files.exists(saveDir)) {
                 // Prompt the user with a clickable confirmation message
                 ChatComponentText confirmationMessage = new ChatComponentText("§cSave slot already exists. Click to overwrite: ");
@@ -89,7 +89,7 @@ public class IRYOCommands extends CommandBase {
                 confirmationMessage.appendSibling(clickableMessage);
                 sender.addChatMessage(confirmationMessage);
             } else {
-                IRYODefaultOptionsApplier.saveConfigs(slot);
+                ECOptionsApplier.saveConfigs(slot);
                 sender.addChatMessage(new ChatComponentText("§aConfigs saved to slot " + slot));
             }
         } catch (NumberFormatException e) {
@@ -113,7 +113,7 @@ public class IRYOCommands extends CommandBase {
                 return;
             }
 
-            IRYODefaultOptionsApplier.loadConfigs(slot);
+            ECOptionsApplier.loadConfigs(slot);
             sender.addChatMessage(new ChatComponentText("§aConfigs loaded from slot " + slot));
         } catch (NumberFormatException e) {
             sender.addChatMessage(new ChatComponentText("§cInvalid slot number. Please specify a number between 1 and 9."));
@@ -146,7 +146,7 @@ public class IRYOCommands extends CommandBase {
                 return;
             }
 
-            Path saveDir = Paths.get(IRespectYourOptions.IRYODir, "save" + slot);
+            Path saveDir = Paths.get(EasyConfigs.ECDir, "save" + slot);
             Files.walk(saveDir).forEach(sourcePath -> {
                 try {
                     Files.delete(sourcePath);
@@ -155,7 +155,7 @@ public class IRYOCommands extends CommandBase {
                 }
             });
 
-            IRYODefaultOptionsApplier.saveConfigs(slot);
+            ECOptionsApplier.saveConfigs(slot);
             sender.addChatMessage(new ChatComponentText("§aSave slot " + slot + " overwritten."));
         } catch (NumberFormatException e) {
             sender.addChatMessage(new ChatComponentText("§cInvalid slot number. Please specify a number between 1 and 9."));

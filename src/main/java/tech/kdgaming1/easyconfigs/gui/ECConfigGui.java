@@ -1,13 +1,13 @@
-package tech.kdgaming1.irespectyouroptions.gui;
+package tech.kdgaming1.easyconfigs.gui;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 
-public class IRYOConfigGui extends GuiScreen {
+public class ECConfigGui extends GuiScreen {
     private GuiScreen parentScreen;
 
-    public IRYOConfigGui(GuiScreen parentScreen) {
+    public ECConfigGui(GuiScreen parentScreen) {
         this.parentScreen = parentScreen;
     }
 

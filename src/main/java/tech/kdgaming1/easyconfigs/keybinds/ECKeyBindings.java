@@ -1,4 +1,4 @@
-package tech.kdgaming1.irespectyouroptions.keybinds;
+package tech.kdgaming1.easyconfigs.keybinds;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -7,9 +7,9 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 
-import tech.kdgaming1.irespectyouroptions.gui.IRYOConfigGui;
+import tech.kdgaming1.easyconfigs.gui.ECConfigGui;
 
-public class IRYOKeyBindings {
+public class ECKeyBindings {
     public static KeyBinding openConfigGuiKey;
 
     public static void init() {
@@ -20,7 +20,7 @@ public class IRYOKeyBindings {
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (openConfigGuiKey.isPressed()) {
-            Minecraft.getMinecraft().displayGuiScreen(new IRYOConfigGui(null));
+            Minecraft.getMinecraft().displayGuiScreen(new ECConfigGui(null));
         }
     }
 }
