@@ -5,6 +5,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,7 +19,7 @@ import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.util.Objects;
 
-@Mod(modid = IRespectYourOptions.MOD_ID, version = IRespectYourOptions.VERSION, guiFactory = "tech.kdgaming1.irespectyouroptions.gui.IRespectYourOptionsGuiFactory")
+@Mod(modid = IRespectYourOptions.MOD_ID, version = IRespectYourOptions.VERSION, guiFactory = "tech.kdgaming1.irespectyouroptions.config.IRYOGuiFactory")
 public class IRespectYourOptions {
     public static final String MOD_ID = "irespectyouroptions";
     public static final String VERSION = "0.2.3-1.8.9";
@@ -26,16 +27,15 @@ public class IRespectYourOptions {
     private static final Logger LOGGER = LogManager.getLogger(IRespectYourOptions.class);
 
     @Mod.EventHandler
-    public void preInit(FMLInitializationEvent event) {
-        // Register key bindings
-        MinecraftForge.EVENT_BUS.register(new IRYOKeyBindings());
-
+    public void preInit(FMLPreInitializationEvent event) {
+        IRYOConfigs.init(event.getSuggestedConfigurationFile());
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         IRYOKeyBindings.init();
         ClientCommandHandler.instance.registerCommand(new IRYOCommands());
+        MinecraftForge.EVENT_BUS.register(new IRYOKeyBindings());
     }
 
     public static String runDir = Paths.get("").toAbsolutePath().toString();
@@ -43,8 +43,6 @@ public class IRespectYourOptions {
     public static String IRYODir = Paths.get(runDir, "IRespectYourOptions").toString();
 
     public IRespectYourOptions() {
-
-        new IRYOConfigs();
 
         LOGGER.info("Applying default options... (IRespectYourOptions)");
         try {
@@ -87,7 +85,7 @@ public class IRespectYourOptions {
             } else {
                 IRYODefaultOptionsApplier.apply();
                 LOGGER.info("Copying of config files have been set to true. IRYO is now copying the config files from your chosen IRYOConfig slot or the default config slot to the config folder.");
-                IRYOConfigs.wantToCopy = false;
+                IRYOConfigs.setWantToCopy(false);
                 LOGGER.info("The copy config value have been set to false to prevent the default options from being applied again. If you want to apply the default options again do /IRYO loadConfigs 0 or [1-9] (1-9 is your own saves or if the mod pack developer have multiple different saves) and restart the game.");
             }
         } catch (Exception e) {
