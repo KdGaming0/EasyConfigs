@@ -1,46 +1,47 @@
 package tech.kdgaming1.easyconfigs.config;
 
+
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import tech.kdgaming1.easyconfigs.EasyConfigs;
 
 import java.io.File;
 
 public class ECConfigs {
 
-    public static boolean wantToCopy;
-    private static Configuration configuration;
+    public static Configuration configuration;
 
-    public static void init(File configFile) {
-        // Initialize the configuration object
-        configuration = new Configuration(configFile);
-        loadConfig();
-    }
+    public static boolean wantToCopy = true;
 
-    private static void loadConfig() {
-        try {
-            configuration.load();
-            Property hasCopyProperty = configuration.get("copy", "wantToCopy", true, "Set to true to apply default options");
-            wantToCopy = hasCopyProperty.getBoolean();
-        } catch (Exception e) {
-            System.err.println("Error loading configuration file: " + e.getMessage());
-        } finally {
-            if (configuration.hasChanged()) {
-                configuration.save();
-            }
+    public static void init(String configDir) {
+
+        if (configuration == null) {
+            File path = new File(configDir + "/" + EasyConfigs.MOD_ID + ".cfg");
+
+            configuration = new Configuration(path);
+            loadConfigurations();
         }
     }
 
-    public static void syncConfig() {
-        loadConfig();
-    }
+    private static void loadConfigurations() {
 
-    // Method to update the wantToCopy value and save the configuration
-    public static void setWantToCopy(boolean value) {
-        wantToCopy = value;
-        if (configuration != null) {
-            Property hasCopyProperty = configuration.get("copy", "wantToCopy", true, "Set to true to apply default options");
-            hasCopyProperty.set(value);
+        wantToCopy = configuration.getBoolean("Want To Copy Options", Configuration.CATEGORY_GENERAL, true, "Set to true to apply options");
+
+        if (configuration.hasChanged()) {
             configuration.save();
         }
     }
+
+    @SubscribeEvent
+    public void onConfigurationChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
+        if (event.modID.equalsIgnoreCase(EasyConfigs.MOD_ID)) {
+            loadConfigurations();
+        }
+    }
+
+    public static Configuration getConfiguration() {
+        return configuration;
+    }
+
 }

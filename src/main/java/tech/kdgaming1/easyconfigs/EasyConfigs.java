@@ -2,10 +2,11 @@ package tech.kdgaming1.easyconfigs;
 
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,7 +20,7 @@ import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.util.Objects;
 
-@Mod(modid = EasyConfigs.MOD_ID, version = EasyConfigs.VERSION, guiFactory = "tech.kdgaming1.easyconfigs.config.IRYOGuiFactory")
+@Mod(modid = EasyConfigs.MOD_ID, version = EasyConfigs.VERSION, guiFactory = "tech.kdgaming1.easyconfigs.gui.ECGuiFactory")
 public class EasyConfigs {
     public static final String MOD_ID = "easyconfigs";
     public static final String VERSION = "1.0.0-1.8.9";
@@ -28,7 +29,18 @@ public class EasyConfigs {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        ECConfigs.init(event.getSuggestedConfigurationFile());
+        String configDir = event.getModConfigurationDirectory().toString();
+        ECConfigs.init(configDir);
+        FMLCommonHandler.instance().bus().register(new ECConfigs());
+
+        if (!ECConfigs.wantToCopy) {
+            LOGGER.info("Configs is set to NOT apply, if you want to apply the default options again do /IRYO loadConfigs 0 or [1-9] (1-9 is your own saves or if the mod pack developer have multiple different saves) and restart the game.\");  .");
+        } else {
+            ECOptionsApplier.apply();
+            LOGGER.info("Copying of config files have been set to true. IRYO is now copying the config files from your chosen IRYOConfig slot or the default config slot to the config folder.");
+            ECConfigs.wantToCopy = false;
+            LOGGER.info("The copy config value have been set to false to prevent the default options from being applied again. If you want to apply the default options again do /IRYO loadConfigs 0 or [1-9] (1-9 is your own saves or if the mod pack developer have multiple different saves) and restart the game.");
+        }
     }
 
     @Mod.EventHandler
@@ -78,15 +90,6 @@ public class EasyConfigs {
                 Files.copy(sourceFile2, targetFile2, StandardCopyOption.REPLACE_EXISTING);
             } catch (URISyntaxException | IOException e) {
                 LOGGER.error("Failed to copy files.", e);
-            }
-
-            if (!ECConfigs.wantToCopy) {
-                LOGGER.info("Configs is set to not apply, if you want to apply the default options again do /IRYO loadConfigs 0 or [1-9] (1-9 is your own saves or if the mod pack developer have multiple different saves) and restart the game.\");  .");
-            } else {
-                ECOptionsApplier.apply();
-                LOGGER.info("Copying of config files have been set to true. IRYO is now copying the config files from your chosen IRYOConfig slot or the default config slot to the config folder.");
-                ECConfigs.setWantToCopy(false);
-                LOGGER.info("The copy config value have been set to false to prevent the default options from being applied again. If you want to apply the default options again do /IRYO loadConfigs 0 or [1-9] (1-9 is your own saves or if the mod pack developer have multiple different saves) and restart the game.");
             }
         } catch (Exception e) {
             LOGGER.error("Failed to apply default options.", e);
