@@ -50,7 +50,6 @@ sourceSets.main {
 
 repositories {
     mavenCentral()
-    maven("https://repo.spongepowered.org/maven/")
     // If you don't want to log in with your real minecraft account, remove this line
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 }
