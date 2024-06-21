@@ -99,21 +99,22 @@ public class ECCommands extends CommandBase {
                 return;
             }
 
-            Path saveDir = Paths.get(ECSetup.ECDir, "EasyConfigsSave" + slot);
+            Path saveDir = Paths.get(ECSetup.ECDir, "EasyConfigSave" + slot);
             if (Files.exists(saveDir)) {
                 // Prompt the user with a clickable confirmation message
                 sender.addChatMessage(new ChatComponentText("§cSlot have already been saved to. Click to confirm overwrite.")
                         .setChatStyle(new ChatStyle()
                                 .setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/EasyConfigs confirmOverwrite " + slot))));
             } else {
-                ECConfigFileManager.saveConfigs(slot);
+                ECConfigFileManager.saveConfigs(slot, false);
                 sender.addChatMessage(new ChatComponentText("§aConfigs saved to slot " + slot));
             }
 
         } catch (NumberFormatException e) {
             sender.addChatMessage(new ChatComponentText("§cInvalid slot number. Please specify a number between 1 and 9."));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            sender.addChatMessage(new ChatComponentText("§cAn error occurred while saving the configs: " + e.getMessage()));
+            e.printStackTrace(); // Print stack trace to log for debugging
         }
     }
 
@@ -129,13 +130,14 @@ public class ECCommands extends CommandBase {
                 sender.addChatMessage(new ChatComponentText("§cInvalid slot number. Please specify a number between 1 and 9."));
                 return;
             } else {
-                ECConfigFileManager.saveConfigs(slot);
+                ECConfigFileManager.saveConfigs(slot, true);
                 sender.addChatMessage(new ChatComponentText("§aConfigs saved to slot " + slot));
             }
         } catch (NumberFormatException e) {
             sender.addChatMessage(new ChatComponentText("§cInvalid slot number. Please specify a number between 1 and 9."));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            sender.addChatMessage(new ChatComponentText("§cAn error occurred while saving the configs: " + e.getMessage()));
+            e.printStackTrace(); // Print stack trace to log for debugging
         }
     }
 

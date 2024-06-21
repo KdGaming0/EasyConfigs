@@ -7,24 +7,40 @@ import static tech.kdgaming1.easyconfigs.EasyConfigs.MOD_ID;
 import tech.kdgaming1.easyconfigs.chatutils.ECChatUtils;
 import tech.kdgaming1.easyconfigs.config.ECConfigs;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Comparator;
 
 public class ECConfigFileManager {
 
     private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
-    public static void saveConfigs(int slot) throws IOException {
+    public static void saveConfigs(int slot, boolean overwrite) throws IOException {
         String configDir = ECSetup.configDir;
         String saveDir = Paths.get(ECSetup.ECDir, "EasyConfigSave" + slot).toString();
         Path saveDirPath = Paths.get(ECSetup.ECDir, "EasyConfigSave" + slot);
 
         if (Files.exists(saveDirPath)) {
-            throw new FileAlreadyExistsException("Save slot " + slot + " already exists.");
-        } else {
-            ECOptionsApplier.apply(configDir, saveDir);
+            if (!overwrite) {
+                throw new FileAlreadyExistsException("Save slot " + slot + " already exists.");
+            } else {
+                // Delete existing directory and its contents
+                try {
+                    Files.walk(saveDirPath)
+                            .sorted(Comparator.reverseOrder())
+                            .map(Path::toFile)
+                            .forEach(File::delete);
+                } catch (IOException e) {
+                    LOGGER.error("Failed to delete save slot " + slot + ".", e);
+                    throw e;
+                }
+            }
         }
+        // Save the config files
+        ECOptionsApplier.apply(configDir, saveDirPath.toString());
+        LOGGER.info("Configs saved to slot " + slot + ".");
     }
 
     public static void loadConfigs(int slot) throws IOException {
