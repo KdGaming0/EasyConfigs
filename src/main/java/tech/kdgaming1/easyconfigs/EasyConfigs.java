@@ -16,6 +16,7 @@ import tech.kdgaming1.easyconfigs.easyconfighandler.ECSetup;
 import tech.kdgaming1.easyconfigs.keybinds.ECKeyBindings;
 import tech.kdgaming1.easyconfigs.command.ECCommands;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Mod(modid = EasyConfigs.MOD_ID, version = EasyConfigs.VERSION, guiFactory = "tech.kdgaming1.easyconfigs.gui.ECGuiFactory")
@@ -25,25 +26,28 @@ public class EasyConfigs {
 
     private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
-    String runDir = ECSetup.runDir;
-    String ECDir = ECSetup.ECDir;
-    String ECSave = Paths.get(ECDir, "EasyConfigSave" + ECConfigs.copySlot).toString();
-
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         String configDir = event.getModConfigurationDirectory().toString();
         ECConfigs.init(configDir);
-        FMLCommonHandler.instance().bus().register(new ECConfigs());
+
+        String runDir = ECSetup.runDir;
+        String ECSave = Paths.get(ECSetup.ECDir, "EasyConfigSave" + ECConfigs.copySlot).toString();
 
         ECSetup.setup();
 
+        LOGGER.info("Copy Slot: " + ECConfigs.copySlot);
+        LOGGER.info("EC Save path: " + ECSave);
+
         LOGGER.info("Applying default options... (EasyConfigs!)");
         if (!ECConfigs.wantToCopy) {
-            LOGGER.info("Configs is set to NOT apply, if you want to apply the default options again do /IRYO loadConfigs 0 or [1-9] (1-9 is your own saves or if the mod pack developer have multiple different saves) and restart the game.\");  .");
+            LOGGER.info("Copying of config files have been set to false by you. Easy Configs will not copy the config files from your chosen ECConfig slot or the default config slot to the config folder. \n If you want to copy the config files, Do /EasyConfigs LoadConfigs [1-9] or LoadDefaultConfigs.");
         } else {
             LOGGER.info("Copying of config files have been set to true by you. Easy Configs is now copying the config files from your chosen ECConfig slot or the default config slot to the config folder.");
             ECOptionsApplier.apply(ECSave, runDir);
         }
+
+        FMLCommonHandler.instance().bus().register(new ECConfigs());
     }
 
     @Mod.EventHandler
