@@ -16,10 +16,9 @@ import tech.kdgaming1.easyconfigs.easyconfighandler.ECSetup;
 import tech.kdgaming1.easyconfigs.keybinds.ECKeyBindings;
 import tech.kdgaming1.easyconfigs.command.ECCommands;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@Mod(modid = EasyConfigs.MOD_ID, version = EasyConfigs.VERSION, guiFactory = "tech.kdgaming1.easyconfigs.gui.ECGuiFactory")
+@Mod(modid = EasyConfigs.MOD_ID, version = EasyConfigs.VERSION, guiFactory = "tech.kdgaming1.easyconfigs.config.gui.ECGuiFactory")
 public class EasyConfigs {
     public static final String MOD_ID = "easyconfigs";
     public static final String VERSION = "1.0.0-1.8.9";
@@ -53,7 +52,7 @@ public class EasyConfigs {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         ECKeyBindings.init();
-        ClientCommandHandler.instance.registerCommand(new ECCommands());
         MinecraftForge.EVENT_BUS.register(new ECKeyBindings());
+        ClientCommandHandler.instance.registerCommand(new ECCommands());
     }
 }

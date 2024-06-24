@@ -1,4 +1,4 @@
-package tech.kdgaming1.easyconfigs.gui;
+package tech.kdgaming1.easyconfigs.config.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
