@@ -67,7 +67,14 @@ public class ECCommands extends CommandBase {
                     handleLoadConfigs(sender, args);
                     break;
                 case "loadDefaultConfigs":
-                    if (args.length == 2 && args[1].equals("confirm")) {
+                    if (args.length == 3 && args[2].equalsIgnoreCase("confirm")) {
+                        if (args[1].equalsIgnoreCase("loadMCOptions")) {
+                            ECConfigs.wantToIncludeMCOptions = true;
+                            ECConfigs.getConfiguration().get(Configuration.CATEGORY_GENERAL, "Include MCOptions", true).set(ECConfigs.wantToIncludeMCOptions);
+                        } else {
+                            ECConfigs.wantToIncludeMCOptions = false;
+                            ECConfigs.getConfiguration().get(Configuration.CATEGORY_GENERAL, "Include MCOptions", false).set(ECConfigs.wantToIncludeMCOptions);
+                        }
                         ECConfigs.wantToCopy = true;
                         ECConfigs.getConfiguration().get(Configuration.CATEGORY_GENERAL, "Want To Copy", true).set(ECConfigs.wantToCopy);
                         ECConfigs.copySlot = 0;
@@ -77,7 +84,7 @@ public class ECCommands extends CommandBase {
                     } else {
                         sender.addChatMessage(new ChatComponentText("§cThe loading of default configs this will overwrite your configs! Click to confirm!")
                                 .setChatStyle(new ChatStyle()
-                                        .setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/EasyConfigs loadDefaultConfigs confirm"))));
+                                        .setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/EasyConfigs loadDefaultConfigs " + args[1] + " confirm"))));
                         ECChatUtils.printChatMessage("§cRestart to apply the default options.");
                     }
                     break;
@@ -169,10 +176,23 @@ public class ECCommands extends CommandBase {
             return;
         }
 
+        if (args.length < 3) {
+            sender.addChatMessage(new ChatComponentText("§cPlease specify if you want to also load the Minecraft options. [ loadMCOptions | don'tLoadMCOptions ]"));
+            return;
+        }
+
         Path saveDir = Paths.get(ECSetup.ECDir, "EasyConfigSave" + slot);
         if (!Files.exists(saveDir)) {
             sender.addChatMessage(new ChatComponentText("§cSave slot does not exist"));
             return;
+        }
+
+        boolean MCOptions;
+
+        if (args[2].equalsIgnoreCase("loadMCOptions")) {
+            MCOptions = true;
+        } else {
+            MCOptions = false;
         }
         try {
             slot = Integer.parseInt(args[1]);
@@ -181,7 +201,7 @@ public class ECCommands extends CommandBase {
                 return;
             }
 
-            ECConfigFileManager.loadConfigs(slot);
+            ECConfigFileManager.loadConfigs(slot, MCOptions);
             sender.addChatMessage(new ChatComponentText("§aConfigs loaded from slot " + slot));
             sender.addChatMessage(new ChatComponentText("§aRestart the game to apply the options."));
         } catch (NumberFormatException e) {
@@ -247,9 +267,28 @@ public class ECCommands extends CommandBase {
             sender.addChatMessage(new ChatComponentText("§cPlease specify if you want to set the imported configs as current (requires restart) or only import to the save slot. [setAsCurrentConfigs|onlyImportToSaveSlot]"));
             return;
         }
-        if (args.length < 4) {
-            sender.addChatMessage(new ChatComponentText("§cPlease specify the name of the import file. Remember to put it inside the EasyConfigs/EasyConfigImport folder. DO NOT include the .zip extension to the name."));
-            return;
+
+        boolean setAsCurrentConfigs = args[2].equalsIgnoreCase("setAsCurrentConfigs");
+        boolean MCOptions = false;
+        String importPathStr;
+
+        if (setAsCurrentConfigs) {
+            if (args.length < 4) {
+                sender.addChatMessage(new ChatComponentText("§cPlease specify if you want to also load the Minecraft options. [ loadMCOptions | don'tLoadMCOptions ]"));
+                return;
+            }
+            MCOptions = args[3].equalsIgnoreCase("loadMCOptions");
+            if (args.length < 5) {
+                sender.addChatMessage(new ChatComponentText("§cPlease specify the name of the import file. Remember to put it inside the EasyConfigs/EasyConfigImport folder. DO NOT include the .zip extension to the name."));
+                return;
+            }
+            importPathStr = args[4];
+        } else {
+            if (args.length < 4) {
+                sender.addChatMessage(new ChatComponentText("§cPlease specify the name of the import file. Remember to put it inside the EasyConfigs/EasyConfigImport folder. DO NOT include the .zip extension to the name."));
+                return;
+            }
+            importPathStr = args[3];
         }
 
         try {
@@ -264,13 +303,12 @@ public class ECCommands extends CommandBase {
                 // Prompt the user with a clickable confirmation message
                 sender.addChatMessage(new ChatComponentText("§cSlot already contains configs. Click to confirm overwrite.")
                         .setChatStyle(new ChatStyle()
-                                .setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/EasyConfigs confirmImportOverwrite " + slot + " " + args[2] + " " + args[3]))));
+                                .setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/EasyConfigs confirmImportOverwrite " + slot + " " + args[2] + " " + (setAsCurrentConfigs ? args[3] : "") + " " + importPathStr))));
             } else {
-                Path importPath = Paths.get(ECSetup.ECImport, args[3]);
+                Path importPath = Paths.get(ECSetup.ECImport, importPathStr);
                 sender.addChatMessage(new ChatComponentText("§aImport path: " + importPath.toString()));
-                boolean setAsCurrentConfigs = args.length > 3 && args[2].equalsIgnoreCase("setAsCurrentConfigs");
 
-                ECConfigFileManager.importConfigs(slot, importPath, setAsCurrentConfigs);
+                ECConfigFileManager.importConfigs(slot, importPath, setAsCurrentConfigs, MCOptions);
                 sender.addChatMessage(new ChatComponentText("§aConfigs imported to slot " + slot + "."));
             }
         } catch (NumberFormatException e) {
@@ -282,22 +320,26 @@ public class ECCommands extends CommandBase {
     }
 
     public void handleConfirmImportOverwrite(ICommandSender sender, String[] args) {
-        if (args.length < 4) {
+        if (args.length < 5) {
             sender.addChatMessage(new ChatComponentText("§cPlease specify a save slot, setAsCurrentConfigs or onlyImportToSaveSlot, and the import file name."));
             return;
         }
 
         try {
+            boolean MCOptions = false;
+            if (args[3].equalsIgnoreCase("loadMCOptions")) {
+                MCOptions = true;
+            }
             int slot = Integer.parseInt(args[1]);
             if (slot < 1 || slot > 9) {
                 sender.addChatMessage(new ChatComponentText("§cInvalid slot number. Please specify a number between 1 and 9."));
-                return;
             } else {
-                Path importPath = Paths.get(ECSetup.ECImport, args[3]);
+                String importPathStr = args[4];
+                Path importPath = Paths.get(ECSetup.ECImport, importPathStr);
                 sender.addChatMessage(new ChatComponentText("§aImport path: " + importPath.toString()));
                 boolean setAsCurrentConfigs = args[2].equalsIgnoreCase("setAsCurrentConfigs");
 
-                ECConfigFileManager.importConfigs(slot, importPath, setAsCurrentConfigs);
+                ECConfigFileManager.importConfigs(slot, importPath, setAsCurrentConfigs, MCOptions);
                 sender.addChatMessage(new ChatComponentText("§aConfigs imported to slot " + slot + "."));
             }
         } catch (NumberFormatException e) {
@@ -317,13 +359,14 @@ public class ECCommands extends CommandBase {
         } else if (args.length == 2) {
             switch (args[0]) {
                 case "saveConfigs":
+                case "importConfigs":
                     return getListOfStringsMatchingLastWord(args, "1", "2", "3", "4", "5", "6", "7", "8", "9");
                 case "loadConfigs":
                     return getListOfStringsMatchingLastWord(args, "1", "2", "3", "4", "5", "6", "7", "8", "9");
                 case "exportConfigs":
                     return getListOfStringsMatchingLastWord(args, "config", "EasyConfigSave1", "EasyConfigSave2", "EasyConfigSave3", "EasyConfigSave4", "EasyConfigSave5", "EasyConfigSave6", "EasyConfigSave7", "EasyConfigSave8", "EasyConfigSave9");
-                case "importConfigs":
-                    return getListOfStringsMatchingLastWord(args, "1", "2", "3", "4", "5", "6", "7", "8", "9");
+                case "loadDefaultConfigs":
+                    return getListOfStringsMatchingLastWord(args, "loadMCOptions", "don'tLoadMCOptions");
             }
         } else if (args.length == 3) {
             if (args[0].equals("exportConfigs") && args[1].equals("config")) {
@@ -334,6 +377,12 @@ public class ECCommands extends CommandBase {
                     return getListOfStringsMatchingLastWord(args, "setAsCurrentConfigs", "onlyImportToSaveSlot");
                 case "saveConfigs":
                     return getListOfStringsMatchingLastWord(args, "addMCOptions", "don'tAddMCOptions");
+                case "loadConfigs":
+                    return getListOfStringsMatchingLastWord(args, "loadMCOptions", "don'tLoadMCOptions");
+            }
+        } else if (args.length == 4) {
+            if (args[0].equals("importConfigs") && args[2].equals("setAsCurrentConfigs")) {
+                return getListOfStringsMatchingLastWord(args, "loadMCOptions", "don'tLoadMCOptions");
             }
         }
         return Arrays.asList();

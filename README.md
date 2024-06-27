@@ -1,39 +1,65 @@
-# Architectury Loom based template for 1.8.9 forge mods
+# EasyConfigs Mod for Minecraft
 
-**For other templates, do check out the [other branches of this repository](https://github.com/romangraef/Forge1.8.9Template/branches/all)**
+EasyConfigs is a Minecraft mod designed for modpack creators and regular users alike. It simplifies the configuration process by providing a GUI for managing configurations and supports exporting and importing of configuration files. This allows modpack creators to ship default settings without fear of them being reset with every update. Regular users can also benefit from this mod by easily switching between different sets of configurations or sharing their configurations with friends.
+
+## Features
+
+- Save and load configurations with ease.
+- Import and export configuration files.
+- GUI for managing configurations.
+- Ideal for mod pack creators to ship default settings.
+- Allows regular users to switch between different configurations or share their configurations.
+
+## Installation
+
+1. Download the latest release of EasyConfigs from the [releases page](https://modrinth.com/mod/easyconfigs/versions).
+2. Place the downloaded `.jar` file into your Minecraft's `mods` folder.
+3. Run Minecraft with the Forge mod loader.
 
 ## Usage
 
-Check out https://moddev.nea.moe/ for a full tutorial on legacy modding.
+After installing the mod, you can access the EasyConfigs GUI from the Minecraft pause menu. From there, you can manage your configurations.
 
-Alternatively, read here for a basic overview on how to use this repository.
+## Commands
 
-To get started, [Use this template](https://github.com/new?template_name=Forge1.8.9Template&template_owner=nea89o).
+1. **Save Configurations**: `/EasyConfigs saveConfigs [1-9] [addMCOptions|don'tAddMCOptions]` - Saves the current configurations to a specified slot (1-9). You can also specify whether to include Minecraft options in the save.
 
-> [!WARNING]
-> Do not Fork or Clone or Download ZIP this template. If you "use" this template a custom mod id will be generated. You can do that manually using the `make-my-own` script, if you are on linux. If not, just click the use this template button. If you want to use kotlin or make a 1.12 mod check the "Include all branches" and change the default branch in https://github.com/yourname/yourreponame/branches
+2. **Load Configurations**: `/EasyConfigs loadConfigs [1-9] [loadMCOptions|don'tLoadMCOptions]` - Loads configurations from a specified slot (1-9). You can also specify whether to load Minecraft options.
 
-This project uses [DevAuth](https://github.com/DJtheRedstoner/DevAuth) per default, so you can log in using your real
-minecraft account. If you don't need that, you can remove it from the buildscript.
+3. **Load Default Configurations**: `/EasyConfigs loadDefaultConfigs [loadMCOptions|don'tLoadMCOptions]` - Loads the default configurations. You can specify whether to include Minecraft options.
 
-To run the mod you will need two JDKs, one Java 17 jdk and one Java 1.8 jdk. You can download those
-from [here](https://adoptium.net/temurin/releases) (or use your own downloads).
+4. **Confirm Overwrite**: `/EasyConfigs confirmOverwrite [1-9] [addMCOptions|don'tAddMCOptions]` - Confirms the overwrite of a specified slot (1-9) when saving configurations. You can also specify whether to include Minecraft options in the save.
 
-When you import your project into IntelliJ, you need to set the gradle jvm to the Java 17 JDK in the gradle tab, and the
-Project SDK to the Java 1.8 JDK. Then click on the sync button in IntelliJ, and it should create a run task
-called `Minecraft Client`. If it doesn't then try relaunching your IntelliJ. **Warning for Mac users**: You might have to remove the `-XStartOnFirstThread` vm argument from your run configuration. In the future, that should be handled by the plugin, but for now you'll probably have to do that manually.
+5. **Export Configurations**: `/EasyConfigs exportConfigs [sourceFolder] [zipFileName] [addMCOptions|don'tAddMCOptions]` - Exports configurations from a specified source folder to a zip file. You can also specify whether to include Minecraft options in the export.
 
-To export your project, run the `gradle build` task, and give other people the
-file `build/libs/<modid>-<version>.jar`. Ignore the jars in the `build/badjars` folder. Those are intermediary jars that
-are used by the build system but *do not work* in a normal forge installation.
+6. **Import Configurations**: `/EasyConfigs importConfigs [1-9] [setAsCurrentConfigs|onlyImportToSaveSlot] [zipFileName] [loadMCOptions|don'tLoadMCOptions]` - Imports configurations from a specified zip file to a slot (1-9). You can specify whether to set the imported configurations as current or only import to the save slot. You can also specify whether to load Minecraft options.
 
-If you don't want mixins (which allow for modifying vanilla code), then you can remove the references to mixins from
-the `build.gradle.kts` at the lines specified with comments and the `com.example.mixin` package.
+Please replace the placeholders with the actual values when using these commands.
 
-### For those who have not an attention span
+## For Mod Pack Developers
 
-[![Youtube Tutorial](https://i.ytimg.com/vi/nWzHlomdCgc/maxresdefault.jpg)](https://www.youtube.com/watch?v=nWzHlomdCgc)
+EasyConfigs is a powerful tool for mod pack developers. It allows you to create a consistent configuration setup across all instances of your mod pack, ensuring that every player has the same gameplay experience. Here's how you can use EasyConfigs:
 
-## Licensing
+1. **Setup Your Configurations**: Start by setting up all the configurations for your mods and the vanilla game. Make sure everything works as you want it to.
 
-This template is licensed under the Unlicense (license copy present in this repository), or alternatively under [Creative Commons 1.0 Universal (CC0 1.0)](https://creativecommons.org/publicdomain/zero/1.0/), and all contributions and PR to this template are expected to follow this. This means your mod, based on this template can be licensed whatever way you want, and does not need to reference back to this template in any way.
+2. **Open EasyConfigs GUI**: Once your configurations are set, open the EasyConfigs GUI. You can do this from the Minecraft pause menu.
+
+3. **Create Default Configurations**: In the EasyConfigs GUI, click on the "Modpack" button. Then, click on the "Create Default Configs" button. This action will copy all the configurations from the game (including your mods and the vanilla game settings) to the default configs folder located at `easyconfigs/easyconfigsave0`.
+
+4. **Review the Default Configurations**: Go through the `easyconfigs/easyconfigsave0` folder and ensure all necessary configuration files are present. Some mods create multiple files, and not all of them might be necessary. Delete any files that are not needed.
+
+5. **Export Your Configurations**: Now that your default configurations are set, you're ready to export. When including files in your mod pack, do not select the `configs` folder or the `options.txt` or `server.dat` files. Instead, include the `easyconfigs` folder.
+
+### Bonus Step for Mod Pack Developers
+
+If you want to provide your users with the ability to choose between different configuration setups, you can do so by using the save slots feature of EasyConfigs:
+
+1. **Save Different Configurations**: Set up different configurations for your mods and the vanilla game. For each setup, save the configurations to a different slot using Save Configs option in the menu.
+
+2. **Inform Your Users**: In your mod pack description, inform your users about the different configuration setups available. Tell them they can load the different setups by using the EasyConfigs GUI.
+
+3. **Export Your Configurations**: Now export just as before.
+
+By following these steps, you can ensure that your mod pack users have a consistent configuration setup, and they don't have to worry about losing their settings when updating the mod pack.
+
+Written by: Kd_Gaming1 and ChatGPT

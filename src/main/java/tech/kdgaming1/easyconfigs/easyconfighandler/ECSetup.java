@@ -1,21 +1,12 @@
 package tech.kdgaming1.easyconfigs.easyconfighandler;
 
-import net.minecraftforge.common.config.Configuration;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import tech.kdgaming1.easyconfigs.config.ECConfigs;
 import static tech.kdgaming1.easyconfigs.EasyConfigs.MOD_ID;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Objects;
 
 public class ECSetup {
 
@@ -57,31 +48,6 @@ public static void setup() {
             if (!ECSave0Config.exists() && !ECSave0Config.mkdirs()) {
                 LOGGER.error("Failed to create directory: " + ECSave0Config.getAbsolutePath());
                 throw new IllegalStateException("Could not create directory: " + ECSave0Config.getAbsolutePath());
-            }
-
-            if (ECConfigs.newUser) {
-                try {
-                    // Get the InputStreams of the source files in the resources directory
-                    InputStream sourceStream1 = Objects.requireNonNull(ECSetup.class.getClassLoader().getResourceAsStream("easyconfigs/exampleConfig_openForInstructions.txt"));
-                    InputStream sourceStream2 = Objects.requireNonNull(ECSetup.class.getClassLoader().getResourceAsStream("easyconfigs/exampleConfig2_openForInstructions.txt"));
-
-
-                    // Get the paths of the target directories
-                    Path targetFile1 = ECSave0.toPath().resolve("exampleConfig_openForInstructions.txt");
-                    Path targetFile2 = ECSave0Config.toPath().resolve("exampleConfig2_openForInstructions.txt");
-
-                    // Copy the files
-                    Files.copy(sourceStream1, targetFile1, StandardCopyOption.REPLACE_EXISTING);
-                    Files.copy(sourceStream2, targetFile2, StandardCopyOption.REPLACE_EXISTING);
-
-                    ECConfigs.newUser = false;
-                    ECConfigs.getConfiguration().get(Configuration.CATEGORY_GENERAL, "New User", true).set(ECConfigs.newUser);
-                    ECConfigs.getConfiguration().save();
-                } catch (IOException e) {
-                    LOGGER.error("Failed to copy example files.", e);
-                } catch (NullPointerException e) {
-                    LOGGER.error("Failed to get the InputStreams of the source files.", e);
-                }
             }
         } catch(Exception e){
             LOGGER.error("Failed to create directories.", e);

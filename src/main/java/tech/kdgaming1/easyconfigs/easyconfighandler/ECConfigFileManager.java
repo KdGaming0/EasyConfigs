@@ -26,6 +26,7 @@ public class ECConfigFileManager {
         boolean addMCOptions = MCOptions;
         Path saveDirPath = Paths.get(ECSetup.ECDir, "EasyConfigSave" + slot);
 
+        LOGGER.info("Saving configs to slot " + slot + "...");
         if (Files.exists(saveDirPath)) {
             if (!overwrite) {
                 throw new FileAlreadyExistsException("Save slot " + slot + " already exists.");
@@ -47,7 +48,7 @@ public class ECConfigFileManager {
         LOGGER.info("Configs saved to slot " + slot + ".");
     }
 
-    public static void loadConfigs(int slot) throws IOException {
+    public static void loadConfigs(int slot, boolean MCOptions) throws IOException {
         Path loadDir = Paths.get(ECSetup.ECDir, "EasyConfigSave" + slot);
 
         if (!Files.exists(loadDir)) {
@@ -57,6 +58,8 @@ public class ECConfigFileManager {
             ECConfigs.getConfiguration().get(Configuration.CATEGORY_GENERAL, "Want To Copy", true).set(ECConfigs.wantToCopy);
             ECConfigs.copySlot = slot;
             ECConfigs.getConfiguration().get(Configuration.CATEGORY_GENERAL, "Config Slot", 0).set(ECConfigs.copySlot);
+            ECConfigs.wantToIncludeMCOptions = MCOptions;
+            ECConfigs.getConfiguration().get(Configuration.CATEGORY_GENERAL, "Include MCOptions", true).set(ECConfigs.wantToIncludeMCOptions);
             ECConfigs.getConfiguration().save();
             LOGGER.info("The copy config value have been set to true to allow the default options to be applied again. Restart the game to apply the default options. The value will be set to false after the default options have been applied.");
             ECChatUtils.printChatMessage("§aConfigs set to load from slot " + slot + ". Restart the game to apply the options.");
@@ -95,7 +98,7 @@ public class ECConfigFileManager {
         LOGGER.info("Configs exported to " + zipFilePath.toString());
     }
 
-    public static void importConfigs(int slot, Path importPath, boolean setAsCurrentConfigs) throws IOException {
+    public static void importConfigs(int slot, Path importPath, boolean setAsCurrentConfigs, boolean addMCOptions) throws IOException {
         Path saveDirPath = Paths.get(ECSetup.ECDir, "EasyConfigSave" + slot);
 
         if (!Files.exists(saveDirPath)) {
@@ -112,6 +115,8 @@ public class ECConfigFileManager {
             ECConfigs.getConfiguration().get(Configuration.CATEGORY_GENERAL, "Want To Copy", true).set(ECConfigs.wantToCopy);
             ECConfigs.copySlot = slot;
             ECConfigs.getConfiguration().get(Configuration.CATEGORY_GENERAL, "Config Slot", 0).set(ECConfigs.copySlot);
+            ECConfigs.wantToIncludeMCOptions = addMCOptions;
+            ECConfigs.getConfiguration().get(Configuration.CATEGORY_GENERAL, "Include MCOptions", true).set(ECConfigs.wantToIncludeMCOptions);
             ECConfigs.getConfiguration().save();
             LOGGER.info("The copy config value have been set to true to allow the default options to be applied again. Restart the game to apply the default options. The value will be set to false after the default options have been applied.");
             ECChatUtils.printChatMessage("§aConfigs set to load from slot " + slot + ". Restart the game to apply the options.");

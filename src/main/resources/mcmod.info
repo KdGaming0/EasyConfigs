@@ -10,8 +10,8 @@
     "authorList": [
       "Kd_Gaming1"
     ],
-    "credits": "",
-    "logoFile": "easyconfigs/assets/logo.png",
+    "credits": "Nea89, for the forge mod template",
+    "logoFile": "assets/easyconfigs/logo.png",
     "screenshots": [],
     "dependencies": []
   }
