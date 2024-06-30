@@ -6,16 +6,14 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
+import tech.kdgaming1.easyconfigs.command.ECCommands;
 import tech.kdgaming1.easyconfigs.config.ECConfigs;
 import tech.kdgaming1.easyconfigs.easyconfighandler.ECOptionsApplier;
 import tech.kdgaming1.easyconfigs.easyconfighandler.ECSetup;
 import tech.kdgaming1.easyconfigs.gui.ECButtonOnPause;
 import tech.kdgaming1.easyconfigs.keybinds.ECKeyBindings;
-import tech.kdgaming1.easyconfigs.command.ECCommands;
 
 import java.nio.file.Paths;
 
@@ -53,11 +51,11 @@ public class EasyConfigs {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         FMLCommonHandler.instance().bus().register(new ECConfigs());
+        ECKeyBindings.init();
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        ECKeyBindings.init();
         MinecraftForge.EVENT_BUS.register(new ECKeyBindings());
         ClientCommandHandler.instance.registerCommand(new ECCommands());
         MinecraftForge.EVENT_BUS.register(new ECButtonOnPause());
