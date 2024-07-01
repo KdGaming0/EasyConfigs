@@ -53,11 +53,11 @@ public class EasyConfigs {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         FMLCommonHandler.instance().bus().register(new ECConfigs());
+        ECKeyBindings.init();
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        ECKeyBindings.init();
         MinecraftForge.EVENT_BUS.register(new ECKeyBindings());
         ClientCommandHandler.instance.registerCommand(new ECCommands());
         MinecraftForge.EVENT_BUS.register(new ECButtonOnPause());
