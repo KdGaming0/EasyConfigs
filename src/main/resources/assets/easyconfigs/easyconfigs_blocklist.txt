@@ -1,0 +1,83 @@
+# EasyConfigs Default Blocklist
+# Add directories or files to exclude, one per line
+# Use relative paths from the game's root directory
+
+# Examples:
+# config/somemod # Exclude the entire somemod directory
+# config/somemod/largefile.json # Exclude a specific file
+
+# Default entries
+config/notenoughupdates/prices
+config/notenoughupdates/repo
+config/notenoughupdates/wkhtmltox-win
+config/notenoughupdates/auctionable_items.json
+config/notenoughupdates/collected_fairy_souls.json
+config/notenoughupdates/collected_secrets.json
+config/notenoughupdates/currentCommit.json
+config/notenoughupdates/donated_museum_items.json
+config/notenoughupdates/farmingEventTypes.json
+config/notenoughupdates/itemCustomization.json
+config/notenoughupdates/petCache.json
+config/notenoughupdates/profiles.json
+config/notenoughupdates/slotLocking.json
+config/notenoughupdates/storageItems.json
+config/notenoughupdates/official-wiki.css
+config/notenoughupdates/wikia.css
+
+config/partly-sane-skies/chatAlertsData.json
+config/partly-sane-skies/endOfFarmRanges.json
+config/partly-sane-skies/permPartyData.json
+config/partly-sane-skies/petData.json
+config/partly-sane-skies/visitorLogbook.json
+config/partly-sane-skies/wordEditor.json
+
+config/dungeonsguide/roomdatas
+
+config/skyguide
+
+config/skyhanni/logs
+config/skyhanni/repo
+config/skyhanni/currentCommit.json
+config/skyhanni/friends.json
+config/skyhanni/jacob_contests.json
+config/skyhanni/known_features.json
+config/skyhanni/sacks.json
+
+config/skytils/tracker
+config/skytils/updates
+config/skytils/armorcolors.json
+config/skytils/cooldowntracker.json
+config/skytils/favoriteitems.json
+config/skytils/favoritepets.json
+config/skytils/potionEffectTimers.json
+config/skytils/pricepaid.json
+
+config/forge.cfg
+config/forgeChunkLoading.cfg
+config/loader.cfg
+config/splash.properties
+
+essential/avatar-cache
+essential/image-cache
+essential/libraries
+essential/loader
+essential/lwjgl3-natives
+essential/mappings
+essential/screenshot-cache
+essential/screenshot-metadata
+essential/Essential (forge_1.8.9).jar
+essential/Essential (forge_1.8.9).jar.meta
+essential/Essential (forge_1.8.9).processed.jar
+essential/essential-loader.properties
+essential/screenshot-checksum-caches.json
+essential/version.json
+
+OneConfig/launchwrapper
+OneConfig/temp
+OneConfig/OneConfig (1.8.9-forge).jar
+OneConfig/OneConfig.json
+OneConfig/Preferences.json
+
+
+
+# Add your own entries below:

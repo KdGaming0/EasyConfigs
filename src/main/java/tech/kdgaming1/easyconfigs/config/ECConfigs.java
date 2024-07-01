@@ -16,6 +16,7 @@ public class ECConfigs {
     public static boolean configButtonOnPause = true;
     public static boolean configButtonOnOptions = true;
     public static boolean advancedLogging = false;
+    public static boolean useBlocklist = true; // New configuration option
 
     public static void init(String configDir) {
         if (configuration == null) {
@@ -32,6 +33,7 @@ public class ECConfigs {
         configButtonOnPause = configuration.getBoolean("Config Button On Pause Menu", Configuration.CATEGORY_GENERAL, true, "Set to true to show the Easy Configs button on the pause menu, false to hide it.");
         configButtonOnOptions = configuration.getBoolean("Config Button On Options Menu", Configuration.CATEGORY_GENERAL, true, "Set to true to show the Easy Configs button on the options menu, false to hide it.");
         advancedLogging = configuration.getBoolean("Advanced Logging", Configuration.CATEGORY_GENERAL, false, "Set to true to enable advanced logging, false to disable it. (This will log more information to the console. Good to haven when you are having issues with EasyConfigs.)");
+        useBlocklist = configuration.getBoolean("Use Blocklist", Configuration.CATEGORY_GENERAL, true, "Set to true to use the blocklist file for excluding directories and files, false to disable it.");
 
         if (configuration.hasChanged()) {
             configuration.save();

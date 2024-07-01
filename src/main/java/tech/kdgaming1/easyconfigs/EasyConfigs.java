@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 @Mod(modid = EasyConfigs.MOD_ID, version = EasyConfigs.VERSION, guiFactory = "tech.kdgaming1.easyconfigs.config.gui.ECGuiFactory")
 public class EasyConfigs {
     public static final String MOD_ID = "easyconfigs";
-    public static final String VERSION = "1.0.0-1.8.9";
+    public static final String VERSION = "1.1.1-1.8.9";
 
     private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 

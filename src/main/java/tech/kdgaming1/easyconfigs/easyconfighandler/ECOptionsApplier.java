@@ -20,12 +20,18 @@ import tech.kdgaming1.easyconfigs.config.ECConfigs;
 public class ECOptionsApplier {
 
     private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
+    private static final String BLOCKLIST_FILE = "easyconfigs_blocklist.txt";
+    private static Set<String> blocklist = new HashSet<>();
 
     public static void apply(String sourceDir, String destinationDir, boolean MCOptions) {
         File sourceFolder = new File(sourceDir);
         if (!sourceFolder.exists()) {
             LOGGER.info("Source directory {} does not exist. Location: {}", sourceDir, sourceFolder.getAbsolutePath());
             return;
+        }
+
+        if (ECConfigs.useBlocklist) {
+            loadBlocklist();
         }
 
         List<String> pathsToExclude = Arrays.asList("options.txt", "optionsof.txt", "servers.dat", "servers.dat_old");
@@ -38,11 +44,17 @@ public class ECOptionsApplier {
                 String relativePath = sourceFolder.toPath().relativize(path).toString();
                 if (!MCOptions && pathsToExclude.contains(relativePath)) return;
 
-                try {
-                    File targetFile = new File(destinationDir, relativePath);
-                    applyDefaultOptions(targetFile, defaultFile);
-                } catch (Exception e) {
-                    LOGGER.error("Error applying default options for file: {}", defaultFile.getAbsolutePath(), e);
+                if (!isBlocked(relativePath)) {
+                    try {
+                        File targetFile = new File(destinationDir, relativePath);
+                        applyDefaultOptions(targetFile, defaultFile);
+                    } catch (Exception e) {
+                        LOGGER.error("Error applying default options for file: {}", defaultFile.getAbsolutePath(), e);
+                    }
+                } else {
+                    if (ECConfigs.advancedLogging) {
+                        LOGGER.debug("Skipping blocked file or directory: {}", relativePath);
+                    }
                 }
             });
             LOGGER.info("Options have been successfully applied.");
@@ -52,6 +64,45 @@ public class ECOptionsApplier {
         }
     }
 
+    private static void loadBlocklist() {
+        File blocklistFile = new File(ECSetup.configDir, BLOCKLIST_FILE);
+        if (!blocklistFile.exists()) {
+            LOGGER.warn("Blocklist file not found: {}. Blocklist will be empty.", blocklistFile.getAbsolutePath());
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(blocklistFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (!line.isEmpty() && !line.startsWith("#")) {
+                    blocklist.add(line);
+                }
+            }
+            if (ECConfigs.advancedLogging) {
+            LOGGER.info("Loaded {} entries from blocklist file.", blocklist.size());
+            }
+        } catch (IOException e) {
+            LOGGER.error("Error reading blocklist file", e);
+        }
+    }
+
+    private static boolean isBlocked(String relativePath) {
+        if (!ECConfigs.useBlocklist) return false;
+        String normalizedPath = relativePath.replace("\\", "/");
+        boolean isBlocked = blocklist.stream().anyMatch(blockedPath ->
+                normalizedPath.startsWith(blockedPath) || normalizedPath.equals(blockedPath));
+        if (isBlocked) {
+            if (ECConfigs.advancedLogging) {
+                LOGGER.debug("Skipping blocked file or directory: {}", normalizedPath);
+            }
+        } else {
+            if (ECConfigs.advancedLogging) {
+                LOGGER.debug("Copying non-blocked file or directory: {}", normalizedPath);
+            }
+        }
+        return isBlocked;
+    }
     public static void saveConfigs(String destinationDir, boolean MCOptions) {
         Path sourceDir = Paths.get(ECSetup.runDir);
         List<String> pathsToSave = new ArrayList<>(Arrays.asList("config"));
@@ -61,10 +112,15 @@ public class ECOptionsApplier {
 
         checkAndAddDirectories(sourceDir, pathsToSave, "OneConfig", "essential");
 
+        // Load the blocklist
+        if (ECConfigs.useBlocklist) {
+            loadBlocklist();
+        }
+
         try (Stream<Path> paths = Files.walk(sourceDir).parallel()) {
             paths.filter(Files::isRegularFile).forEach(path -> {
                 String relativePath = sourceDir.relativize(path).toString();
-                if (pathsToSave.stream().anyMatch(relativePath::startsWith)) {
+                if (pathsToSave.stream().anyMatch(relativePath::startsWith) && !isBlocked(relativePath)) {
                     try {
                         applyDefaultOptions(new File(destinationDir, relativePath), path.toFile());
                     } catch (IOException e) {
@@ -112,21 +168,32 @@ public class ECOptionsApplier {
             saveConfigs(tempFolder, MCOptions);
             sourceDir = Paths.get(tempFolder);
         }
+
+        if (ECConfigs.useBlocklist && isConfigFolder) {
+            loadBlocklist();
+        }
+
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(zipFile.toFile().toPath())))) {
             Path finalSourceDir = sourceDir;
             Files.walkFileTree(sourceDir, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) throws IOException {
-                    zipOutputStream.putNextEntry(new ZipEntry(finalSourceDir.relativize(file).toString()));
-                    Files.copy(file, zipOutputStream);
-                    zipOutputStream.closeEntry();
+                    String relativePath = finalSourceDir.relativize(file).toString();
+                    if (!isConfigFolder || !isBlocked(relativePath)) {
+                        zipOutputStream.putNextEntry(new ZipEntry(relativePath));
+                        Files.copy(file, zipOutputStream);
+                        zipOutputStream.closeEntry();
+                    }
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attributes) throws IOException {
-                    zipOutputStream.putNextEntry(new ZipEntry(finalSourceDir.relativize(dir).toString() + "/"));
-                    zipOutputStream.closeEntry();
+                    String relativePath = finalSourceDir.relativize(dir).toString();
+                    if (!isConfigFolder || !isBlocked(relativePath)) {
+                        zipOutputStream.putNextEntry(new ZipEntry(relativePath + "/"));
+                        zipOutputStream.closeEntry();
+                    }
                     return FileVisitResult.CONTINUE;
                 }
             });
@@ -165,8 +232,9 @@ public class ECOptionsApplier {
     }
 
     private static void createParentDirectories(File file) throws IOException {
-        if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
-            throw new IllegalStateException("Could not create directory: " + file.getParentFile().getAbsolutePath());
+        File parentFile = file.getParentFile();
+        if (parentFile != null && !parentFile.exists() && !parentFile.mkdirs()) {
+            throw new IOException("Failed to create directory: " + parentFile.getAbsolutePath());
         }
     }
 

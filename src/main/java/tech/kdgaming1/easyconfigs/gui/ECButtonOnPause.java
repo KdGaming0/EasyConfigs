@@ -8,8 +8,11 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import tech.kdgaming1.easyconfigs.config.ECConfigs;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class ECButtonOnPause {
-    private static final int buttonId = (int) System.nanoTime();
+    private static final int BUTTON_ID = (int) System.nanoTime();
     private static final int BUTTON_WIDTH = 100;
     private static final int BUTTON_HEIGHT = 20;
 
@@ -17,7 +20,7 @@ public class ECButtonOnPause {
     public void onGuiAction(GuiScreenEvent.ActionPerformedEvent.Post event) {
         if ((ECConfigs.configButtonOnPause && event.gui instanceof GuiIngameMenu) ||
                 (ECConfigs.configButtonOnOptions && event.gui instanceof GuiOptions)) {
-            if (event.button.id == buttonId) {
+            if (event.button.id == BUTTON_ID) {
                 Minecraft.getMinecraft().displayGuiScreen(new ECGuiScreen());
             }
         }
@@ -26,41 +29,39 @@ public class ECButtonOnPause {
     @SubscribeEvent
     public void onGuiInitPost(GuiScreenEvent.InitGuiEvent.Post event) {
         if (event.gui instanceof GuiIngameMenu && ECConfigs.configButtonOnPause) {
-            addButtonToCorner(event, true);
+            addButtonToCorner(event);
         } else if (event.gui instanceof GuiOptions && ECConfigs.configButtonOnOptions) {
-            addButtonToCorner(event, false);
+            addButtonToCorner(event);
         }
     }
 
-    private void addButtonToCorner(GuiScreenEvent.InitGuiEvent.Post event, boolean isPauseMenu) {
+    private void addButtonToCorner(GuiScreenEvent.InitGuiEvent.Post event) {
         int screenWidth = event.gui.width;
         int screenHeight = event.gui.height;
 
-        // Position the button in the top-right corner
+        // Position the button in the bottom-right corner
         int x = screenWidth - BUTTON_WIDTH - 5;
-        int y = 5;
+        int x2 = x + BUTTON_WIDTH;
+        int y = screenHeight - BUTTON_HEIGHT - 2;
+        int y2 = y + BUTTON_HEIGHT;
 
-        // Check for overlaps and adjust position if necessary
-        for (GuiButton button : event.buttonList) {
-            if (button.xPosition + button.width > x && button.xPosition < x + BUTTON_WIDTH &&
-                    button.yPosition + button.height > y && button.yPosition < y + BUTTON_HEIGHT) {
-                // If there's an overlap, move our button down
-                y = button.yPosition + button.height + 2;
+        List<GuiButton> sortedButtonList = event.buttonList.stream()
+                .sorted((a, b) -> (b.yPosition + b.height) - (a.yPosition + a.height))
+                .collect(Collectors.toList());
+
+        for (GuiButton button : sortedButtonList) {
+            int otherX = button.xPosition;
+            int otherX2 = button.xPosition + button.width;
+            int otherY = button.yPosition;
+            int otherY2 = button.yPosition + button.height;
+
+            if (otherX2 > x && otherX < x2 && otherY2 > y && otherY < y2) {
+                y = otherY - BUTTON_HEIGHT - 2;
+                y2 = y + BUTTON_HEIGHT;
             }
         }
 
-        // Add the button
-        GuiButton easyConfigsButton = new GuiButton(buttonId, x, y, BUTTON_WIDTH, BUTTON_HEIGHT, "Easy Configs");
+        GuiButton easyConfigsButton = new GuiButton(BUTTON_ID, x, Math.max(0, y), BUTTON_WIDTH, BUTTON_HEIGHT, "Easy Configs");
         event.buttonList.add(easyConfigsButton);
-
-        // If it's the pause menu, we need to move the "Open to LAN" button if it exists
-        if (isPauseMenu) {
-            for (GuiButton button : event.buttonList) {
-                if (button.id == 7) { // 7 is the ID for the "Open to LAN" button
-                    button.yPosition = y + BUTTON_HEIGHT + 2;
-                    break;
-                }
-            }
-        }
     }
 }

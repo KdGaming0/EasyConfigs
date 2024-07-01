@@ -3,7 +3,7 @@
     "modid": "easyconfigs",
     "name": "Easy Configs",
     "description": "A mod that simplifies configurations. Let's save and load different configurations with ease!",
-    "version": "1.0.0",
+    "version": "1.1.1-1.8.9",
     "mcversion": "1.8.9",
     "url": "https://modrinth.com/mod/easyconfigs",
     "updateUrl": "https://modrinth.com/mod/easyconfigs/versions",
