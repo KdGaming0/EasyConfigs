@@ -20,6 +20,10 @@ EasyConfigs is a Minecraft mod designed for modpack creators and regular users a
 
 After installing the mod, you can access the EasyConfigs GUI from the Minecraft pause menu. From there, you can manage your configurations.
 
+## Some other notes to consider
+
+In the config folder will there be a file that you can but files and folder that you don't want to copy or export. Some mods makes files that don't have configs and are no need to copy them.
+
 ## Commands
 
 1. **Save Configurations**: `/EasyConfigs saveConfigs [1-9] [addMCOptions|don'tAddMCOptions]` - Saves the current configurations to a specified slot (1-9). You can also specify whether to include Minecraft options in the save.
