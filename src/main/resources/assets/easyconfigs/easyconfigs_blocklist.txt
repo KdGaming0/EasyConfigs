@@ -77,7 +77,9 @@ OneConfig/temp
 OneConfig/OneConfig (1.8.9-forge).jar
 OneConfig/OneConfig.json
 OneConfig/Preferences.json
-
+OneConfig/profiles/Default Profile/patcher.json
+OneConfig/profiles/Default Profile/patcher_sounds.json
+OneConfig/profiles/Default Profile/patcher-not-migrated.json
 
 
 # Add your own entries below:
