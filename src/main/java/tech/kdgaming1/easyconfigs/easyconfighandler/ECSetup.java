@@ -5,9 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import static tech.kdgaming1.easyconfigs.EasyConfigs.MOD_ID;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -22,11 +20,13 @@ public class ECSetup {
     private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
     private static final String BLOCKLIST_FILE = "easyconfigs_blocklist.txt";
     private static final String DEFAULT_BLOCKLIST_RESOURCE = "/assets/easyconfigs/easyconfigs_blocklist.txt";
+    private static final String MODPACK_INFO_FILE = "modpack_config_info.txt";
 
     public static void setup() {
         try {
             createDirectories();
             createBlocklistFile();
+            createModpackInfoFile();
         } catch(Exception e){
             LOGGER.error("Failed to set up EasyConfigs.", e);
         }
@@ -67,5 +67,31 @@ public class ECSetup {
                 LOGGER.error("Failed to create blocklist file", e);
             }
         }
+    }
+
+    private static void createModpackInfoFile() {
+        File modpackInfoFile = new File(ECDir, MODPACK_INFO_FILE);
+        if (!modpackInfoFile.exists()) {
+            try (PrintWriter writer = new PrintWriter(new FileWriter(modpackInfoFile))) {
+                writer.println("# Modpack Configuration Information");
+                writer.println("# Modpack creators: Replace this content with information about your modpack's configurations.");
+                writer.println("# Explain which configurations users should load for different setups.");
+                LOGGER.info("Created modpack info file: " + modpackInfoFile.getAbsolutePath());
+            } catch (IOException e) {
+                LOGGER.error("Failed to create modpack info file", e);
+            }
+        }
+    }
+
+    public static String readModpackInfo() {
+        File modpackInfoFile = new File(ECDir, MODPACK_INFO_FILE);
+        if (modpackInfoFile.exists()) {
+            try {
+                return new String(Files.readAllBytes(modpackInfoFile.toPath()));
+            } catch (IOException e) {
+                LOGGER.error("Failed to read modpack info file", e);
+            }
+        }
+        return "No modpack-specific configuration information available.";
     }
 }
